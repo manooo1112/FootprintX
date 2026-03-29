@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FootprintX | Identity Intelligence</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Share+Tech+Mono&display=swap');
+        
+        body { background: #01080e; color: #00d4ff; font-family: 'Share Tech Mono', monospace; min-height: 100vh; }
+        .terminal-box { border: 2px solid #00d4ff; background: rgba(0, 15, 30, 0.95); padding: 50px; margin-top: 50px; position: relative; box-shadow: 0 0 40px rgba(0, 212, 255, 0.2); }
+        
+        /* Brand Differentiation */
+        .logo-main { font-family: 'Orbitron', sans-serif; font-weight: 900; letter-spacing: 8px; }
+        .logo-white { color: #ffffff; }
+        .logo-red-x { color: #ff0055; text-shadow: 0 0 15px #ff0055; }
+
+        /* Scanning UI */
+        #scan-overlay { display: none; text-align: left; padding: 20px; border: 1px solid #ff0055; margin-top: 20px; background: rgba(255, 0, 85, 0.05); }
+        .status-line { font-size: 0.9rem; margin-bottom: 8px; display: block; }
+        .cursor { display: inline-block; width: 10px; height: 18px; background: #00d4ff; animation: blink 0.8s infinite; vertical-align: middle; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .btn-execute { background: #ff0055; color: white; border: none; font-family: 'Orbitron'; padding: 15px; width: 100%; letter-spacing: 2px; transition: 0.3s; }
+        .btn-execute:hover { background: #ffffff; color: #ff0055; box-shadow: 0 0 20px #ff0055; }
+        
+        input.form-control { background: transparent !important; border: 1px solid #00d4ff !important; color: white !important; border-radius: 0; }
+    </style>
+</head>
+<body>
+
+<div class="container d-flex justify-content-center">
+    <div class="terminal-box col-lg-8">
+        <h1 class="text-center mb-1 logo-main"><span class="logo-white">FOOTPRINT</span><span class="logo-red-x">X</span></h1>
+        <p class="text-center small text-secondary mb-5" style="letter-spacing: 3px;">GLOBAL RISK ADVISORY TERMINAL</p>
+
+        {% if not result %}
+        <div id="input-area">
+            <form id="osint-form" action="/" method="POST">
+                <label class="text-secondary small mb-2">TARGET IDENTITY KEY (NAME)</label>
+                <input type="text" name="name" class="form-control mb-4" placeholder="Enter Full Name" required>
+                
+                <label class="text-secondary small mb-2">DIGITAL POINT OF ENTRY (EMAIL)</label>
+                <input type="email" name="email" class="form-control mb-5" placeholder="Enter Primary Email" required>
+                
+                <button type="button" onclick="startDeepScan()" class="btn-execute">EXECUTE ANALYTICS</button>
+            </form>
+        </div>
+
+        <div id="scan-overlay">
+            <div id="log-container"></div>
+            <span class="status-line text-info">SYSTEM STATUS: PROCESSING... <span class="cursor"></span></span>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-md-6 text-center border-end border-secondary">
+                <p class="text-secondary small">HUMAN PRIVACY BEHAVIOR SCORE</p>
+                <h1 style="font-size: 5rem; color: {% if result.score < 50 %}#ff0055{% else %}#00ff88{% endif %};">{{ result.score }}</h1>
+                <h4 class="fw-bold">{{ result.risk_level }}</h4>
+            </div>
+            <div class="col-md-6 px-4">
+                <p class="text-danger fw-bold mb-1">>> PRE-ATTACK ALERT</p>
+                <p class="small text-white">Identity correlation detected via <strong>{{ result.vector }}</strong>. Subject's digital shadow is currently <strong>{{ result.photos }}</strong> to OSINT dorking methods.</p>
+                <hr class="border-secondary">
+                <p class="text-info small mb-1">REMEDIATION STRATEGY:</p>
+                <ul class="small text-secondary ps-3">
+                    <li>Activate Decoy Gen profiles</li>
+                    <li>NFC Shield Deployment</li>
+                    <li>Metadata Sanitization</li>
+                </ul>
+            </div>
+        </div>
+
+        <form action="/generate-report" method="POST" class="mt-4">
+            <input type="hidden" name="report_data" value="{{ result }}">
+            <button type="submit" class="btn btn-outline-light w-100 py-2">GENERATE 12-PAGE PDF INTEL REPORT</button>
+        </form>
+        <div class="text-center mt-3">
+            <a href="/" class="text-secondary text-decoration-none small">[ DISCONNECT SESSION ]</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function startDeepScan() {
+        // Hide input, show scan logs
+        document.getElementById('input-area').style.display = 'none';
+        document.getElementById('scan-overlay').style.display = 'block';
+
+        const logs = [
+            "[OK] Initializing FootprintX Core...",
+            "[WAIT] Pinging Instagram API Graph...",
+            "[OK] SOCMINT modules loaded.",
+            "[WAIT] Scanning 5.2B Breach Records...",
+            "[FOUND] Identity Correlation in Vector-4.",
+            "[WAIT] Analyzing Metadata Geotags...",
+            "[OK] Digital Risk Twin generated.",
+            "[FINAL] Calculating HPBS Score..."
+        ];
+
+        let i = 0;
+        const container = document.getElementById('log-container');
+
+        const interval = setInterval(() => {
+            if (i < logs.length) {
+                const line = document.createElement('span');
+                line.className = 'status-line';
+                line.innerHTML = `<span style="color: #ff0055;">></span> ${logs[i]}`;
+                container.appendChild(line);
+                i++;
+            } else {
+                clearInterval(interval);
+                // Finally submit the form to get real results from Python
+                setTimeout(() => {
+                    document.getElementById('osint-form').submit();
+                }, 1000);
+            }
+        }, 800); // 0.8 seconds per line for a total of ~6 seconds of "work"
+    }
+</script>
+
+</body>
+</html>
